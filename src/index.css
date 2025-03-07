@@ -1,0 +1,755 @@
+@import url('https://fonts.googleapis.com/css2?family=Urbanist:wght@300;400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  font-family: 'Urbanist', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background-color: #ffffff;
+  color: #000;
+  overflow: hidden;
+  touch-action: none;
+  position: fixed;
+  width: 100%;
+  height: 100%;
+}
+
+/* Hide all scrollbars globally */
+* {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+*::-webkit-scrollbar {
+  display: none;
+}
+
+/* Views */
+.view {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100vh;
+  background-color: #ffffff;
+  overflow: hidden;
+  visibility: hidden;
+  backface-visibility: hidden;
+  transform: translateZ(0);
+}
+
+.view--2 {
+  overflow: hidden;
+}
+
+/* Gallery Styles */
+.gallery {
+  display: flex;
+  margin-left: 12vw;
+  padding-right: 12vw;
+  height: 100vh;
+  align-items: center;
+}
+
+.gallery__item {
+  margin: 0 3vw;
+  display: grid;
+  grid-template-areas: '... ...' 
+                       '... gallery-image'
+                       '... ...' ;
+  grid-template-columns: 8rem 21vmax;
+  grid-template-rows: 8rem 28vmax 3rem;
+  will-change: transform;
+  transform-origin: center center;
+  transition: transform 0.1s ease-out;
+}
+
+.gallery__item-img {
+  grid-area: gallery-image;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  position: relative;
+  will-change: transform;
+  transform-origin: center center;
+}
+
+.gallery__item-imginner {
+  width: 100%;
+  height: calc(100% + 14vh);
+  margin-top: -7vh;
+  background-size: cover;
+  background-position: 50% 25%;
+  will-change: transform;
+  transform-origin: center center;
+  transition: filter 0.3s ease-out;
+}
+
+.gallery__item-caption {
+  grid-area: 1 / 1 / 4 / 3;
+  display: grid;
+  grid-template-areas: 'gallery-number gallery-title' 
+                       'gallery-link ...'
+                       'gallery-link gallery-tags' ;
+  grid-template-columns: 8rem auto;
+  grid-template-rows: 8rem auto 3rem;
+}
+
+.gallery__item-title {
+  grid-area: gallery-title;
+  margin: 0;
+  font-size: clamp(1rem,4vw,3rem);
+  font-weight: 500;
+  font-style: normal;
+  color: #000;
+  align-self: center;
+  font-family: 'Urbanist', sans-serif;
+  letter-spacing: -0.03em;
+  line-height: 0.95;
+  will-change: transform;
+  transform-origin: center center;
+}
+
+.gallery__item-number {
+  grid-area: gallery-number;
+  font-size: clamp(1rem,4vw,3rem);
+  justify-self: end;
+  padding-right: 2rem;
+  color: #d1d1d1;
+  font-family: 'Urbanist', sans-serif;
+  font-weight: 200;
+  font-style: normal;
+  letter-spacing: -0.03em;
+  will-change: transform;
+  transform-origin: center center;
+}
+
+.gallery__item-tags {
+  grid-area: gallery-tags;
+  justify-self: end;
+  font-size: 1.5rem;
+  display: grid;
+  grid-auto-flow: column;
+  grid-gap: 1rem;
+  cursor: pointer;
+  color: #000;
+}
+
+.gallery__item-link {
+  grid-area: gallery-link;
+  align-self: end;
+  font-size: 1.5rem;
+  background: #FF8A3C;
+  color: #fff;
+  text-decoration: underline;
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.gallery__item-link:hover {
+  background: #ff9d5c;
+  color: #fff;
+  text-decoration: none;
+  transform: scale(1.05);
+}
+
+.gallery__text {
+  font-size: 20vw;
+  line-height: 0.8;
+  margin: 0 10vw 0 14vw;
+  text-transform: lowercase;
+  color: transparent;
+  -webkit-text-stroke: 1px #463832;
+  text-stroke: 1px #463832;
+  font-family: 'Urbanist', sans-serif;
+  font-weight: 800;
+  font-style: italic;
+  will-change: transform;
+  transform-origin: center center;
+}
+
+.gallery__text-inner {
+  display: block;
+  will-change: transform;
+  transform-origin: center center;
+}
+
+/* Cursor */
+.cursor {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  pointer-events: none;
+  z-index: 9999;
+}
+
+.cursor__inner {
+  fill: #FF8A3C;
+  stroke: none;
+  stroke-width: 1px;
+  transition: transform 0.3s ease;
+}
+
+@media (any-pointer: fine) {
+  .cursor {
+    display: block;
+  }
+}
+
+/* Loading state */
+.loading {
+  height: 100vh;
+  overflow: hidden;
+}
+
+.loading::before,
+.loading::after {
+  content: '';
+  position: fixed;
+  z-index: 1000;
+}
+
+.loading::before {
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: #ffffff;
+}
+
+.loading::after {
+  top: 50%;
+  left: 50%;
+  width: 60px;
+  height: 60px;
+  margin: -30px 0 0 -30px;
+  border-radius: 50%;
+  opacity: 0.4;
+  background: #FF8A3C;
+  animation: loaderAnim 0.7s linear infinite alternate forwards;
+}
+
+@keyframes loaderAnim {
+  to {
+    opacity: 1;
+    transform: scale3d(0.5,0.5,1);
+  }
+}
+
+/* Locomotive Scroll */
+html.has-scroll-smooth {
+  overflow: hidden;
+}
+
+html.has-scroll-dragging {
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+.has-scroll-smooth body {
+  overflow: hidden;
+}
+
+.has-scroll-smooth [data-scroll-container] {
+  min-height: 100vh;
+}
+
+[data-scroll-direction="horizontal"] [data-scroll-container] {
+  height: 100vh;
+  display: inline-block;
+  white-space: nowrap;
+}
+
+[data-scroll-direction="horizontal"] [data-scroll-section] {
+  display: inline-block;
+  vertical-align: top;
+  white-space: nowrap;
+  height: 100%;
+}
+
+.hero-title {
+  font-family: 'Urbanist', sans-serif;
+  font-weight: 600;
+  letter-spacing: -0.03em;
+  line-height: 0.95;
+  color: #000;
+}
+
+.hero-name {
+  color: #FF8A3C;
+}
+
+.hero-sub {
+  font-family: 'Urbanist', sans-serif;
+  font-weight: 300;
+}
+
+/* Add these new styles before the end of the file */
+.back-arrow-container {
+  position: relative;
+  width: 160px;
+  height: 160px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: auto;
+  margin-top: 5vh;
+}
+
+.back-arrow {
+  width: 80px;
+  height: 80px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #FF8A3C;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: transform 0.3s ease, background-color 0.3s ease;
+  position: relative;
+  z-index: 2;
+}
+
+.back-arrow:hover {
+  transform: scale(1.1);
+  background: #ff9d5c;
+}
+
+.back-arrow svg {
+  width: 40px;
+  height: 40px;
+  color: white;
+}
+
+.rotating-text {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 160px;
+  height: 160px;
+  transform: translate(-50%, -50%);
+  animation: rotate 20s linear infinite;
+  pointer-events: none;
+}
+
+.rotating-text svg {
+  width: 100%;
+  height: 100%;
+}
+
+.rotating-text text {
+  fill: #000;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 3px;
+}
+
+@keyframes rotate {
+  from {
+    transform: translate(-50%, -50%) rotate(0deg);
+  }
+  to {
+    transform: translate(-50%, -50%) rotate(360deg);
+  }
+}
+
+/* Update hover effect for the text */
+.back-arrow:hover + .rotating-text text {
+  fill: rgba(0, 0, 0, 0.8);
+}
+
+/* Add these new styles */
+.navigation-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4rem;
+  margin: 0 5vw;
+  min-width: 200px;
+  min-height: 100vh;
+  position: relative;
+}
+
+.scroll-indicator {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #000;
+  font-size: 0.875rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-top: auto;
+  margin-bottom: 20vh;
+}
+
+.scroll-indicator svg {
+  width: 24px;
+  height: 24px;
+  animation: bounceRight 2s infinite;
+}
+
+@keyframes bounceRight {
+  0%, 100% {
+    transform: translateX(0);
+  }
+  50% {
+    transform: translateX(10px);
+  }
+}
+
+.about-me-container {
+  margin: 0 8vw;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.about-me-card {
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  padding: 2rem;
+  border-radius: 20px;
+  width: 300px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.about-me-card:hover {
+  background: rgba(255, 255, 255, 0.06);
+  transform: translateY(-5px);
+}
+
+.about-me-title {
+  font-family: 'Urbanist', sans-serif;
+  font-weight: 500;
+  font-size: 1.5rem;
+  color: #000;
+  letter-spacing: -0.03em;
+}
+
+.about-me-subtitle {
+  font-family: 'Urbanist', sans-serif;
+  font-weight: 300;
+  color: #666;
+  font-size: 1rem;
+}
+
+.about-me-circle {
+  width: 50px;
+  height: 50px;
+  background: #FF8A3C;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 1rem;
+  transition: all 0.3s ease;
+}
+
+.about-me-card:hover .about-me-circle {
+  background: #ff9d5c;
+  transform: translateX(5px);
+}
+
+.about-me-circle svg {
+  width: 24px;
+  height: 24px;
+  color: white;
+}
+
+/* New styles for the updated home layout */
+.navbar-container {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  padding: 2rem 0;
+}
+
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 2rem;
+  background-color: #000;
+  border-radius: 50px;
+  margin: 1rem;
+  width: auto;
+  min-width: 80%;
+}
+
+.nav-group {
+  display: flex;
+  gap: 2rem;
+  align-items: center;
+}
+
+.nav-link {
+  color: white;
+  text-decoration: none;
+  font-weight: 500;
+  transition: color 0.3s ease;
+  padding: 0.5rem 1rem;
+}
+
+.nav-link:hover {
+  color: #FF8A3C;
+}
+
+.nav-link.active {
+  background-color: #FF8A3C;
+  color: white;
+  padding: 0.5rem 1.5rem;
+  border-radius: 50px;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: white;
+  font-weight: 600;
+  font-size: 1.25rem;
+}
+
+.logo-icon {
+  background-color: #FF8A3C;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Update the hero container */
+.hero-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 60vh;
+  position: relative;
+}
+
+/* Center section with text and image */
+.hero-center {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  width: 100%;
+}
+
+.title-box {
+  border: none;
+  margin-bottom: 2rem;
+  position: relative;
+  z-index: 1;
+  margin-top: 5vh; /* Add margin-top to push the title down */
+  transform: translateY(70px); /* Additional adjustment to push down */
+}
+
+/* Image positioning */
+.hero-image-container {
+  position: relative;
+  width: 400px;
+  height: 500px;
+  margin-top: -100px;
+  z-index: 2;
+}
+
+.hero-image-bg {
+  position: absolute;
+  width: 100%;
+  height: 60%;
+  background-color: #FFCBA4;
+  border-radius: 200px 200px 0 0;
+  z-index: 1;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.hero-image {
+  position: absolute;
+  bottom: 5%;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 2;
+  max-width: 150%;
+  max-height: auto;
+  margin-bottom: 20px; /* Add space between image and bottom of container */
+}
+
+/* Left testimonial */
+.testimonial-container {
+  position: absolute;
+  left: 5%;
+  top: 50%;
+  transform: translateY(-50%);
+  max-width: 250px;
+}
+
+.quote-icon {
+  margin-bottom: 1rem;
+}
+
+.testimonial {
+  font-style: italic;
+  color: #333;
+}
+
+/* Right experience section */
+.experience-container {
+  position: absolute;
+  right: 5%;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.experience {
+  text-align: right;
+}
+
+.stars {
+  color: #FF8A3C;
+  font-size: 1.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.years {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: #000;
+}
+
+/* Action buttons */
+.action-buttons {
+  display: flex;
+  gap: 1rem;
+  margin-top: 2rem;
+  z-index: 10;
+}
+
+.btn {
+  padding: 0.75rem 1.5rem;
+  border-radius: 50px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.btn-primary {
+  background-color: #FF8A3C;
+  color: white;
+  border: none;
+}
+
+.btn-primary:hover {
+  background-color: #ff9d5c;
+  transform: translateY(-2px);
+}
+
+.btn-secondary {
+  background-color: transparent;
+  color: #333;
+  border: none;
+}
+
+.btn-secondary:hover {
+  color: #FF8A3C;
+}
+
+/* Decorative elements */
+.decorative-element {
+  position: absolute;
+  width: 50px;
+  height: 50px;
+  pointer-events: none;
+}
+
+.decorative-element.top-left {
+  top: 100px;
+  left: 50px;
+}
+
+.decorative-element.bottom-right {
+  bottom: 100px;
+  right: 50px;
+}
+
+/* Hero title - update colors */
+.hero-title {
+  font-family: 'Urbanist', sans-serif;
+  font-weight: 600;
+  letter-spacing: -0.03em;
+  line-height: 0.95;
+  color: #000;
+}
+
+.hero-name {
+  color: #FF8A3C;
+}
+
+/* Media queries for better responsiveness */
+@media (max-width: 1200px) {
+  .testimonial-container, .experience-container {
+    position: relative;
+    top: auto;
+    left: auto;
+    right: auto;
+    transform: none;
+    margin: 2rem auto;
+    text-align: center;
+    max-width: 80%;
+  }
+  
+  .experience {
+    text-align: center;
+  }
+  
+  .hero-container {
+    height: auto;
+    padding: 2rem 0;
+  }
+  
+  .hero-image-container {
+    margin-top: 2rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .navbar {
+    flex-direction: column;
+    gap: 1rem;
+  }
+  
+  .nav-group {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+}
